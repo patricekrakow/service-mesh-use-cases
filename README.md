@@ -16,7 +16,7 @@ Let's have `service-a` a _service_ implementing the **two** _API endpoints_ of `
 
 ![alt text](uc-01.01.fig-01.png "Figure 1")
 
-__*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `Alhpa API`, and that includes the _service_ which implements it. So, we will create an additional _network name_ `aplha-api` that will represent _API_.
+__*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `Alhpa API`, and that includes the _service_ which implements it. So, we will create an additional _network name_ `aplha-api` that will represent the _API_.
 
 ![alt text](uc-01.01.fig-02.png "Figure 2")
 
