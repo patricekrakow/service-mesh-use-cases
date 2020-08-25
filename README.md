@@ -25,3 +25,4 @@ __*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `A
 
 Let's have the _version_ `1.0.0` of `service-b` implementing the second _API endpoint_ &ndash; `get /path-02`.
 
+![alt text](uc-01.02.fig-03.png "Figure 3")
