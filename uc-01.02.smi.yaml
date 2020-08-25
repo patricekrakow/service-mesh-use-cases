@@ -1,0 +1,42 @@
+---
+apiVersion: specs.smi-spec.io/v1alpha3
+kind: HTTPRouteGroup
+metadata:
+  name: alpha-api-routes
+  namespace: uc-01
+spec:
+  matches:
+  - name: get-path-01
+    pathRegex: /path-01
+    methods:
+    - GET
+  - name: get-path-02
+    pathRegex: /path-02
+    methods:
+    - GET
+---
+kind: TrafficSplit
+metadata:
+  name: get-path-01-traffic
+spec:
+  service: alpha-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-01
+  backends:
+  - service: service-a-version-1-0-0
+    weight: 100
+---
+kind: TrafficSplit
+metadata:
+  name: get-path-02-traffic
+spec:
+  service: alpha-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-02
+  backends:
+  - service: service-a-version-1-0-0
+    weight: 90
+  - service: service-b-version-1-0-0
+    weight: 10

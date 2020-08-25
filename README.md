@@ -7,6 +7,7 @@ The goal of these use cases is to **test** and **compare** different service mes
 ### UC-01.01 | Initial situation
 
 Let's have `Alpha API` an _API_ with **two** _API endpoints_:
+
 * `get /path-01`
 * `get /path-02`
 
@@ -22,8 +23,5 @@ __*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `A
 
 ### UC-01.02 | Let's split the implementation of two _API endpoints_ which belong to the same _API_
 
-Let's have the _version_ `2.0.0` of `service-a` implementing only the first _API endpoint_ &ndash; `get /path-01` &ndash; instead of the two. The increment of the _major version_ of the _service_ denotes a clear backward incompatible change.
-
 Let's have the _version_ `1.0.0` of `service-b` implementing the second _API endpoint_ &ndash; `get /path-02`.
 
-At this stage, we consider that the _API_ has not changed, such changes will be considered in further use cases.

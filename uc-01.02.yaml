@@ -1,0 +1,50 @@
+---
+# Deploy 'service-a' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-b
+  namespace: uc-01
+---
+# Deploy 'service-b-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-deployment
+  namespace: uc-01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: 1.0.0
+        api: alpha-api
+    spec:
+      serviceAccountName: service-b
+      containers:
+      - name: service-b
+        image: patrice1972/service-b:1.0.0
+        ports:
+        - name: service-b-port
+          protocol: TCP
+          containerPort: 3000
+---
+# Deploy 'service-b-version-1-0-0' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-b-version-1-0-0
+  namespace: uc-01
+spec:
+  selector:
+    app: service-b
+    version: 1.0.0
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
