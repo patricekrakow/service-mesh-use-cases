@@ -100,4 +100,4 @@ spec:
         image: patrice1972/client-x:1.0.0
         env:
         - name: API_HOST
-          value: "alhpa-api.uc-01"
+          value: "alpha-api.uc-01"
