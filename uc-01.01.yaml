@@ -13,11 +13,11 @@ metadata:
   name: service-a
   namespace: uc-01
 ---
-# Deploy 'service-a-deployment' Deployment
+# Deploy 'service-a-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-a-deployment
+  name: service-a-version-1-0-0-deployment
   namespace: uc-01
 spec:
   replicas: 1
@@ -77,27 +77,28 @@ metadata:
   name: client-x
   namespace: uc-01
 ---
-# Deploy 'client-x' Deployment
+# Deploy 'client-x-version-1-0-1-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-x-deployment
+  name: client-x-version-1-0-1-deployment
   namespace: uc-01
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: client-x
+      version: 1.0.1
   template:
     metadata:
       labels:
         app: client-x
-        version: 1.0.0
+        version: 1.0.1
     spec:
       serviceAccountName: client-x
       containers:
       - name: client-x
-        image: patrice1972/client-x:1.0.0
+        image: patrice1972/client-x:1.0.1
         env:
         - name: API_HOST
           value: "acme-api.uc-01"

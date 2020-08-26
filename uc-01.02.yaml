@@ -1,16 +1,17 @@
+# uc-01.02.yaml
 ---
-# Deploy 'service-a' Service Account
+# Deploy 'service-b' Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: service-b
   namespace: uc-01
 ---
-# Deploy 'service-b-deployment' Deployment
+# Deploy 'service-b-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-b-deployment
+  name: service-b-version-1-0-0-deployment
   namespace: uc-01
 spec:
   replicas: 1

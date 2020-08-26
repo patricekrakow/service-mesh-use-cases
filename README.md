@@ -48,11 +48,11 @@ metadata:
   name: service-a
   namespace: uc-01
 ---
-# Deploy 'service-a-deployment' Deployment
+# Deploy 'service-a-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-a-deployment
+  name: service-a-version-1-0-0-deployment
   namespace: uc-01
 spec:
   replicas: 1
@@ -112,27 +112,28 @@ metadata:
   name: client-x
   namespace: uc-01
 ---
-# Deploy 'client-x' Deployment
+# Deploy 'client-x-version-1-0-1-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-x-deployment
+  name: client-x-version-1-0-1-deployment
   namespace: uc-01
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: client-x
+      version: 1.0.1
   template:
     metadata:
       labels:
         app: client-x
-        version: 1.0.0
+        version: 1.0.1
     spec:
       serviceAccountName: client-x
       containers:
       - name: client-x
-        image: patrice1972/client-x:1.0.0
+        image: patrice1972/client-x:1.0.1
         env:
         - name: API_HOST
           value: "acme-api.uc-01"
@@ -210,19 +211,20 @@ Let's have the _version_ `1.0.0` of `service-b` implementing the second _API end
 The Kubernetes manifests of the above situation can be written as follow:
 
 ```yaml
+# uc-01.02.yaml
 ---
-# Deploy 'service-a' Service Account
+# Deploy 'service-b' Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: service-b
   namespace: uc-01
 ---
-# Deploy 'service-b-deployment' Deployment
+# Deploy 'service-b-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-b-deployment
+  name: service-b-version-1-0-0-deployment
   namespace: uc-01
 spec:
   replicas: 1
@@ -321,6 +323,7 @@ You will see that the `client-x` does not always get a reply when calling `get /
 We need to configure the mesh to make sure that the _route_ to `get /path-01` only goes to `service-a` while the route to `get /path-02` can go to both `service-a` and `service-b`.
 
 ```yaml
+# uc-01.02.smi.yaml
 ---
 apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
@@ -342,6 +345,7 @@ apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-01-traffic
+  namespace: uc-01
 spec:
   service: acme-api
   matches:
@@ -350,11 +354,14 @@ spec:
   backends:
   - service: service-a-version-1-0-0
     weight: 100
+  - service: service-b-version-1-0-0
+    weight: 0
 ---
 apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-02-traffic
+  namespace: uc-01
 spec:
   service: acme-api
   matches:
@@ -390,6 +397,8 @@ kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
 ```
 
 <details><summary>Output the command</summary>
+
+> It does NOT always work... yet :-(
 
 ```text
 [INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf

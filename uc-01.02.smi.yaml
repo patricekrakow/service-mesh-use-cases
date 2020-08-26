@@ -1,3 +1,4 @@
+# uc-01.02.smi.yaml
 ---
 apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
@@ -19,6 +20,7 @@ apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-01-traffic
+  namespace: uc-01
 spec:
   service: acme-api
   matches:
@@ -27,11 +29,14 @@ spec:
   backends:
   - service: service-a-version-1-0-0
     weight: 100
+  - service: service-b-version-1-0-0
+    weight: 0
 ---
 apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-02-traffic
+  namespace: uc-01
 spec:
   service: acme-api
   matches:
