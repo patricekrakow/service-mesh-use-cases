@@ -30,7 +30,7 @@ spec:
       labels:
         app: service-a
         version: 1.0.0
-        api: alpha-api
+        api: acme-api
     spec:
       serviceAccountName: service-a
       containers:
@@ -56,15 +56,15 @@ spec:
     port: 3000
     targetPort: 3000
 ---
-# Deploy 'aplha-api' Service
+# Deploy 'acme-api' Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: alpha-api
+  name: acme-api
   namespace: uc-01
 spec:
   selector:
-    api: alpha-api
+    api: acme-api
   ports:
   - protocol: TCP
     port: 3000
@@ -100,4 +100,4 @@ spec:
         image: patrice1972/client-x:1.0.0
         env:
         - name: API_HOST
-          value: "alpha-api.uc-01"
+          value: "acme-api.uc-01"

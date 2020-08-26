@@ -24,7 +24,7 @@ Let's have `service-a` a _service_ implementing the **two** _API endpoints_ of `
 
 ![alt text](uc-01.01.fig-01.png "Figure 1")
 
-__*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `Alhpa API`, and that includes the _service_ which implements it. So, we will create an additional _network name_ `aplha-api` that will represent the _API_.
+__*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `Alhpa API`, and that includes the _service_ which implements it. So, we could add an additional _network name_ like `aplha-api` that would represent the _API_. However, as the _API endpoints_ such as `get /path-01` and `get /path-02` are distinct, we can have only one unique network name such as `acme-api`. If, and only if, we would have a collision about two or more different _API endpoints_ having the same name, then, and only then, we can still use a different network name such as `<differentiator>.acme-api`.
 
 ![alt text](uc-01.01.fig-02.png "Figure 2")
 
@@ -65,7 +65,7 @@ spec:
       labels:
         app: service-a
         version: 1.0.0
-        api: alpha-api
+        api: acme-api
     spec:
       serviceAccountName: service-a
       containers:
@@ -91,15 +91,15 @@ spec:
     port: 3000
     targetPort: 3000
 ---
-# Deploy 'aplha-api' Service
+# Deploy 'acme-api' Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: alpha-api
+  name: acme-api
   namespace: uc-01
 spec:
   selector:
-    api: alpha-api
+    api: acme-api
   ports:
   - protocol: TCP
     port: 3000
@@ -135,8 +135,7 @@ spec:
         image: patrice1972/client-x:1.0.0
         env:
         - name: API_HOST
-          value: "alpha-api.uc-01"
-
+          value: "acme-api.uc-01"
 ```
 
 You can deploy them using the following command:
@@ -152,7 +151,7 @@ namespace/uc-01 created
 serviceaccount/service-a created
 deployment.apps/service-a-deployment created
 service/service-a-version-1-0-0 created
-service/alpha-api created
+service/acme-api created
 serviceaccount/client-x created
 deployment.apps/client-x-deployment created
 ```
@@ -198,7 +197,7 @@ $ kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
 
 </details>
 
-You can see that the `client-x` while addressing the network name `alpha-api` is getting replies from the version `1.0.0.` of the `service-a`.
+You can see that the `client-x` while addressing the network name `acme-api` is getting replies from the version `1.0.0.` of the `service-a`.
 
 ### UC-01.02 | Let's split the implementation of two _API endpoints_ which belong to the same _API_
 
@@ -236,7 +235,7 @@ spec:
       labels:
         app: service-b
         version: 1.0.0
-        api: alpha-api
+        api: acme-api
     spec:
       serviceAccountName: service-b
       containers:
@@ -344,7 +343,7 @@ kind: TrafficSplit
 metadata:
   name: get-path-01-traffic
 spec:
-  service: alpha-api
+  service: acme-api
   matches:
   - kind: HTTPRouteGroup
     name: get-path-01
@@ -357,7 +356,7 @@ kind: TrafficSplit
 metadata:
   name: get-path-02-traffic
 spec:
-  service: alpha-api
+  service: acme-api
   matches:
   - kind: HTTPRouteGroup
     name: get-path-02

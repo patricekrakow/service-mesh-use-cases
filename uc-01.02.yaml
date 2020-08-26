@@ -23,7 +23,7 @@ spec:
       labels:
         app: service-b
         version: 1.0.0
-        api: alpha-api
+        api: acme-api
     spec:
       serviceAccountName: service-b
       containers:

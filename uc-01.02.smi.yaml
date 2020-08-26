@@ -20,7 +20,7 @@ kind: TrafficSplit
 metadata:
   name: get-path-01-traffic
 spec:
-  service: alpha-api
+  service: acme-api
   matches:
   - kind: HTTPRouteGroup
     name: get-path-01
@@ -33,7 +33,7 @@ kind: TrafficSplit
 metadata:
   name: get-path-02-traffic
 spec:
-  service: alpha-api
+  service: acme-api
   matches:
   - kind: HTTPRouteGroup
     name: get-path-02
