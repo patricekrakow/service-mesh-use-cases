@@ -9,9 +9,9 @@ To run the different demos, you need to have a running Kubernetes cluster with a
 * [Playing with Azure Kubernetes Service (AKS)](https://github.com/patricekrakow/learning-stuff/blob/master/playing-with-AKS.md)
 * [Playing with OSM](https://github.com/patricekrakow/learning-stuff/blob/master/playing-with-OSM/playing-with-OSM.md)
 
-## UC-01 | Routing of an _API endpoint_ request to the right _service_
+## UC-02 | Routing of an _API endpoint_ request to the right _service_
 
-### UC-01.01 | Initial situation
+### UC-02.01 | Initial situation
 
 Let's have `Alpha API` an _API_ with **two** _API endpoints_:
 
@@ -22,38 +22,38 @@ Let's have `client-x` a _service_ calling these two _API endpoints_.
 
 Let's have `service-a` a _service_ implementing the **two** _API endpoints_ of `Alpha API`. More precisely, let's have the _version_ `1.0.0` of `service-a` implementing these **two** _API endpoints_.
 
-![alt text](uc-01.01.fig-01.png "Figure 1")
+![alt text](uc-02.01.fig-01.png "Figure 1")
 
 __*WARNING.*__ The `client-x` MUST NOT know the implementation details of the `Alhpa API`, and that includes the _service_ which implements it. So, we could add an additional _network name_ like `aplha-api` that would represent the _API_. However, as the _API endpoints_ such as `get /path-01` and `get /path-02` are distinct, we can have only one unique network name such as `acme-api`. If, and only if, we would have a collision about two or more different _API endpoints_ having the same name, then, and only then, we can still use a different network name such as `<differentiator>.acme-api`.
 
-![alt text](uc-01.01.fig-02.png "Figure 2")
+![alt text](uc-02.01.fig-02.png "Figure 2")
 
 #### Demo Configuration
 
 The Kubernetes manifests of the above situation can be written as follow:
 
 ```yaml
-# uc-01.01.yaml
+# uc-02.01.yaml
 ---
-# Deploy 'uc-01' Namespace
+# Deploy 'demo' Namespace
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: uc-01
+  name: demo
 ---
 # Deploy 'service-a' Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: service-a
-  namespace: uc-01
+  namespace: demo
 ---
 # Deploy 'service-a-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-a-version-1-0-0-deployment
-  namespace: uc-01
+  namespace: demo
 spec:
   replicas: 1
   selector:
@@ -81,7 +81,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-a-version-1-0-0
-  namespace: uc-01
+  namespace: demo
 spec:
   selector:
     app: service-a
@@ -96,7 +96,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: acme-api
-  namespace: uc-01
+  namespace: demo
 spec:
   selector:
     api: acme-api
@@ -110,14 +110,14 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: client-x
-  namespace: uc-01
+  namespace: demo
 ---
 # Deploy 'client-x-version-1-0-1-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-x-version-1-0-1-deployment
-  namespace: uc-01
+  namespace: demo
 spec:
   replicas: 1
   selector:
@@ -136,26 +136,25 @@ spec:
         image: patrice1972/client-x:1.0.1
         env:
         - name: API_HOST
-          value: "acme-api.uc-01"
-
+          value: "acme-api.demo"
 ```
 
 You can deploy them using the following command:
 
 ```text
-$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.01.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.01.yaml
 ```
 
 or 
 
 ```text
-$ kubectl apply -f uc-01.01.yaml
+$ kubectl apply -f uc-02.01.yaml
 ```
 
 <details><summary>Output of the command</summary>
 
 ```text
-namespace/uc-01 created
+namespace/demo created
 serviceaccount/service-a created
 deployment.apps/service-a-version-1-0-0-deployment created
 service/service-a-version-1-0-0 created
@@ -169,7 +168,7 @@ deployment.apps/client-x-version-1-0-1-deployment created
 Then, you can verify that the installation of the demo using the following command:
 
 ```text
-$ kubectl get pods -n uc-01
+$ kubectl get pods -n demo
 ```
 
 <details><summary>Output of the command</summary>
@@ -185,7 +184,7 @@ service-a-version-1-0-0-deployment-5d4fbcc598-fj45c   1/1     Running   0       
 Finally, you can verify that the demo is working properly using the following command:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-xfd5v -n uc-01 | tail
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-xfd5v -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
@@ -259,13 +258,13 @@ osm-prometheus-6cdf59c56f-5s5gg   1/1     Running   0          116s
 Let's onboard the services of our demo to the service mesh via the Kubernetes namespace using the following command:
 
 ```text
-$ osm namespace add uc-01
+$ osm namespace add demo
 ```
 
 <details><summary>Output of the command</summary>
 
 ```text
-Namespace [uc-01] successfully added to mesh [osm]
+Namespace [demo] successfully added to mesh [osm]
 ```
 
 </details>
@@ -273,7 +272,7 @@ Namespace [uc-01] successfully added to mesh [osm]
 We also need to delete the pods so they get re-created them with the sidecar proxy injected:
 
 ```text
-$ kubectl delete pods --all -n uc-01
+$ kubectl delete pods --all -n demo
 ```
 
 <details><summary>Output of the command</summary>
@@ -288,7 +287,7 @@ pod "service-a-version-1-0-0-deployment-5d4fbcc598-fj45c" deleted
 Looking back at the pods using the following command:
 
 ```text
-$ kubectl get pods -n uc-01
+$ kubectl get pods -n demo
 ```
 
 <details><summary>Output of the command</summary>
@@ -306,7 +305,7 @@ We can now see that there are **two** containers per pod, because of the injecti
 And, the demo, as expected, does not work anymore:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n uc-01 | tail
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
@@ -329,13 +328,13 @@ $ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n uc
 We need to explicitly allow the traffic from `client-x` to `service-a` using `TrafficTarget` SMI configuration:
 
 ```yaml
-# uc-01.01.smi.yaml
+# uc-02.01.smi.yaml
 ---
 apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
 metadata:
   name: alpha-api-routes
-  namespace: uc-01
+  namespace: demo
 spec:
   matches:
   - name: get-path-01
@@ -352,12 +351,12 @@ kind: TrafficTarget
 apiVersion: access.smi-spec.io/v1alpha2
 metadata:
   name: allow-client-x-to-service-a-through-alpha-api-routes
-  namespace: uc-01
+  namespace: demo
 spec:
   destination:
     kind: ServiceAccount
     name: service-a
-    namespace: uc-01
+    namespace: demo
     port: 3000
   rules:
   - kind: HTTPRouteGroup
@@ -368,11 +367,11 @@ spec:
   sources:
   - kind: ServiceAccount
     name: client-x
-    namespace: uc-01
+    namespace: demo
 ```
 
 ```text
-$ kubectl apply -f uc-01.01.smi.yaml
+$ kubectl apply -f uc-02.01.smi.yaml
 ```
 
 <details><summary>Output of the command</summary>
@@ -385,37 +384,37 @@ traffictarget.access.smi-spec.io/allow-client-x-to-service-a-through-alpha-api-r
 Let's have a look back at the log of `client-x`:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n uc-01 | tail
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n demo | tail
 ```
 
 </details>
 
-### UC-01.02 | Let's split the implementation of two _API endpoints_ which belong to the same _API_
+### UC-02.02 | Let's split the implementation of two _API endpoints_ which belong to the same _API_
 
 Let's have the _version_ `1.0.0` of `service-b` implementing the second _API endpoint_ &ndash; `get /path-02`.
 
-![alt text](uc-01.02.fig-03.png "Figure 3")
+![alt text](uc-02.02.fig-03.png "Figure 3")
 
 #### Demo Configuration
 
 The Kubernetes manifests of the above situation can be written as follow:
 
 ```yaml
-# uc-01.02.yaml
+# uc-02.02.yaml
 ---
 # Deploy 'service-b' Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: service-b
-  namespace: uc-01
+  namespace: demo
 ---
 # Deploy 'service-b-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-b-version-1-0-0-deployment
-  namespace: uc-01
+  namespace: demo
 spec:
   replicas: 1
   selector:
@@ -443,7 +442,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-b-version-1-0-0
-  namespace: uc-01
+  namespace: demo
 spec:
   selector:
     app: service-b
@@ -457,7 +456,7 @@ spec:
 You can deploy them using the following command:
 
 ```text
-$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.02.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.02.yaml
 ```
 
 <details><summary>Output of the command</summary>
@@ -473,7 +472,7 @@ service/service-b-version-1-0-0 created
 Then, you can verify that the installation of the demo using the following command:
 
 ```text
-$ kubectl get pods -n uc-01
+$ kubectl get pods -n demo
 ```
 
 <details><summary>Output of the command</summary>
@@ -490,7 +489,7 @@ service-b-deployment-585dfd5fb6-xrrlq   1/1     Running   0          15s
 Now, if you look at how the demo is working using the following command:
 
 ```text
-kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
+kubectl logs client-x-deployment-845cdd5657-5x878 -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
@@ -513,13 +512,13 @@ You will see that the `client-x` does not always get a reply when calling `get /
 We need to configure the mesh to make sure that the _route_ to `get /path-01` only goes to `service-a` while the route to `get /path-02` can go to both `service-a` and `service-b`.
 
 ```yaml
-# uc-01.02.smi.yaml
+# uc-02.02.smi.yaml
 ---
 apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
 metadata:
   name: alpha-api-routes
-  namespace: uc-01
+  namespace: demo
 spec:
   matches:
   - name: get-path-01
@@ -535,7 +534,7 @@ apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-01-traffic
-  namespace: uc-01
+  namespace: demo
 spec:
   service: acme-api
   matches:
@@ -551,7 +550,7 @@ apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:
   name: get-path-02-traffic
-  namespace: uc-01
+  namespace: demo
 spec:
   service: acme-api
   matches:
@@ -567,7 +566,7 @@ spec:
 You can deploy them using the following command:
 
 ```text
-$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.02.smi.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.02.smi.yaml
 ```
 
 <details><summary>Output of the command</summary>
@@ -583,7 +582,7 @@ trafficsplit.split.smi-spec.io/get-path-02-traffic created
 Now, you can verify that the demo is working properly using the following command:
 
 ```text
-kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
+kubectl logs client-x-deployment-845cdd5657-5x878 -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
