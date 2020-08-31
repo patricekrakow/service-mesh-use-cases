@@ -4,12 +4,12 @@ The goal of these use cases is to **test** and **compare** different service mes
 
 ## Prerequisites
 
-To run the different demos, you need to have a running Kubernetes cluster with an access to it via the `kubectl` CLI, as well as Open Service Mesh running on top of it. You can follow these two documents to get a proper environment:
+To run the different demos, you need to have a running Kubernetes cluster with an access to it via the `kubectl` CLI, as well as Open Service Mesh running (OSM) on top of it. You can follow these two documents to get a proper environment:
 
 * [Playing with Azure Kubernetes Service (AKS)](https://github.com/patricekrakow/learning-stuff/blob/master/playing-with-AKS.md)
 * [Playing with OSM](https://github.com/patricekrakow/learning-stuff/blob/master/playing-with-OSM/playing-with-OSM.md)
 
-## UC-01 | Routing of the _API endpoint_ request to the right _service_
+## UC-01 | Routing of an _API endpoint_ request to the right _service_
 
 ### UC-01.01 | Initial situation
 
@@ -137,6 +137,7 @@ spec:
         env:
         - name: API_HOST
           value: "acme-api.uc-01"
+
 ```
 
 You can deploy them using the following command:
@@ -145,16 +146,22 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.01.yaml
 ```
 
-<details><summary>Output the command</summary>
+or 
+
+```text
+$ kubectl apply -f uc-01.01.yaml
+```
+
+<details><summary>Output of the command</summary>
 
 ```text
 namespace/uc-01 created
 serviceaccount/service-a created
-deployment.apps/service-a-deployment created
+deployment.apps/service-a-version-1-0-0-deployment created
 service/service-a-version-1-0-0 created
 service/acme-api created
 serviceaccount/client-x created
-deployment.apps/client-x-deployment created
+deployment.apps/client-x-version-1-0-1-deployment created
 ```
 
 </details>
@@ -165,12 +172,12 @@ Then, you can verify that the installation of the demo using the following comma
 $ kubectl get pods -n uc-01
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
-NAME                                    READY   STATUS    RESTARTS   AGE
-client-x-deployment-845cdd5657-5x878    1/1     Running   0          21s
-service-a-deployment-5cdc9d7f78-vf8sf   1/1     Running   0          21s
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-1-deployment-745f54cbf7-xfd5v    1/1     Running   0          36s
+service-a-version-1-0-0-deployment-5d4fbcc598-fj45c   1/1     Running   0          36s
 ```
 
 </details>
@@ -178,27 +185,210 @@ service-a-deployment-5cdc9d7f78-vf8sf   1/1     Running   0          21s
 Finally, you can verify that the demo is working properly using the following command:
 
 ```text
-$ kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-xfd5v -n uc-01 | tail
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
 ```
 
 </details>
 
 You can see that the `client-x` while addressing the network name `acme-api` is getting replies from the version `1.0.0.` of the `service-a`.
+
+Let's now add the service mesh.
+
+Add the OSM CLI to your path using the following command:
+
+```text
+$ export PATH="$HOME/environment/go/src/github.com/openservicemesh/osm/bin:$PATH"
+$ osm version
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+Version: dev; Commit: 930991cbc4a211c43c15195a7a4c7d2c867ddf05; Date: 2020-08-25-09:22
+```
+
+</details>
+
+Install the service mesh using the following command:
+
+```text
+$ osm install --osm-image-tag 930991cbc4a211c43c15195a7a4c7d2c867ddf05
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+OSM installed successfully in namespace [osm-system] with mesh name [osm]
+```
+
+</details>
+
+We can then check the installation of OSM using the following command:
+
+```text
+$ kubectl get pods --namespace osm-system
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+NAME                              READY   STATUS    RESTARTS   AGE
+jaeger-6864b858c5-mwc24           1/1     Running   0          116s
+osm-controller-8554b44bd4-lvvpp   1/1     Running   0          116s
+osm-grafana-fdc677699-r8j2x       1/1     Running   0          116s
+osm-prometheus-6cdf59c56f-5s5gg   1/1     Running   0          116s
+```
+
+</details>
+
+Let's onboard the services of our demo to the service mesh via the Kubernetes namespace using the following command:
+
+```text
+$ osm namespace add uc-01
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+Namespace [uc-01] successfully added to mesh [osm]
+```
+
+</details>
+
+We also need to delete the pods so they get re-created them with the sidecar proxy injected:
+
+```text
+$ kubectl delete pods --all -n uc-01
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+pod "client-x-version-1-0-1-deployment-745f54cbf7-xfd5v" deleted
+pod "service-a-version-1-0-0-deployment-5d4fbcc598-fj45c" deleted
+```
+
+</details>
+
+Looking back at the pods using the following command:
+
+```text
+$ kubectl get pods -n uc-01
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-1-deployment-745f54cbf7-vq5nt    2/2     Running   0          38s
+service-a-version-1-0-0-deployment-5d4fbcc598-kmlnp   2/2     Running   0          37s
+```
+
+We can now see that there are **two** containers per pod, because of the injection of the sidecar proxies.
+
+</details>
+
+And, the demo, as expected, does not work anymore:
+
+```text
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n uc-01 | tail
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+```
+
+</details>
+
+We need to explicitly allow the traffic from `client-x` to `service-a` using `TrafficTarget` SMI configuration:
+
+```yaml
+# uc-01.01.smi.yaml
+---
+apiVersion: specs.smi-spec.io/v1alpha3
+kind: HTTPRouteGroup
+metadata:
+  name: alpha-api-routes
+  namespace: uc-01
+spec:
+  matches:
+  - name: get-path-01
+    pathRegex: /path-01
+    methods:
+    - GET
+  - name: get-path-02
+    pathRegex: /path-02
+    methods:
+    - GET
+---
+# Deploy the 'allow-client-x-to-service-a-through-alpha-api-routes' TrafficTarget
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha2
+metadata:
+  name: allow-client-x-to-service-a-through-alpha-api-routes
+  namespace: uc-01
+spec:
+  destination:
+    kind: ServiceAccount
+    name: service-a
+    namespace: uc-01
+    port: 3000
+  rules:
+  - kind: HTTPRouteGroup
+    name: alpha-api-routes
+    matches:
+    - get-path-01
+    - get-path-02
+  sources:
+  - kind: ServiceAccount
+    name: client-x
+    namespace: uc-01
+```
+
+```text
+$ kubectl apply -f uc-01.01.smi.yaml
+```
+
+<details><summary>Output of the command</summary>
+
+```text
+httproutegroup.specs.smi-spec.io/alpha-api-routes created
+traffictarget.access.smi-spec.io/allow-client-x-to-service-a-through-alpha-api-routes created
+```
+
+Let's have a look back at the log of `client-x`:
+
+```text
+$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n uc-01 | tail
+```
+
+</details>
 
 ### UC-01.02 | Let's split the implementation of two _API endpoints_ which belong to the same _API_
 
@@ -270,7 +460,7 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.02.yaml
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
 serviceaccount/service-b created
@@ -286,7 +476,7 @@ Then, you can verify that the installation of the demo using the following comma
 $ kubectl get pods -n uc-01
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
 NAME                                    READY   STATUS    RESTARTS   AGE
@@ -303,7 +493,7 @@ Now, if you look at how the demo is working using the following command:
 kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
 [INFO]
@@ -380,7 +570,7 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-01.02.smi.yaml
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 ```text
 httproutegroup.specs.smi-spec.io/alpha-api-routes created
@@ -396,7 +586,7 @@ Now, you can verify that the demo is working properly using the following comman
 kubectl logs client-x-deployment-845cdd5657-5x878 -n uc-01 | tail
 ```
 
-<details><summary>Output the command</summary>
+<details><summary>Output of the command</summary>
 
 > It does NOT always work... yet :-(
 
