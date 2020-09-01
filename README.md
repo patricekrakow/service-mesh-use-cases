@@ -496,11 +496,17 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.02.yaml
 ```
 
+or
+
+```text
+$ kubectl apply -f uc-02.02.yaml
+```
+
 <details><summary>Output of the command</summary>
 
 ```text
 serviceaccount/service-b created
-deployment.apps/service-b-deployment created
+deployment.apps/service-b-version-1-0-0-deployment created
 service/service-b-version-1-0-0 created
 ```
 
@@ -515,10 +521,10 @@ $ kubectl get pods -n demo
 <details><summary>Output of the command</summary>
 
 ```text
-NAME                                    READY   STATUS    RESTARTS   AGE
-client-x-deployment-845cdd5657-5x878    1/1     Running   0          135m
-service-a-deployment-5cdc9d7f78-vf8sf   1/1     Running   0          137m
-service-b-deployment-585dfd5fb6-xrrlq   1/1     Running   0          15s
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-1-deployment-7db9cf495b-8t7xs    2/2     Running   0          17m
+service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv   2/2     Running   0          17m
+service-b-version-1-0-0-deployment-5b44559c86-nrmgw   2/2     Running   0          38s
 ```
 
 </details>
@@ -526,21 +532,25 @@ service-b-deployment-585dfd5fb6-xrrlq   1/1     Running   0          15s
 Now, if you look at how the demo is working using the following command:
 
 ```text
-kubectl logs client-x-deployment-845cdd5657-5x878 -n demo | tail
+kubectl logs client-x-version-1-0-1-deployment-7db9cf495b-8t7xs client-x -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
 
 ```text
-[INFO]
-[INFO] Hello from get /path-02 | service-b (1.0.0) | service-b-deployment-585dfd5fb6-xrrlq
-[INFO]
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-b (1.0.0) | service-b-deployment-585dfd5fb6-xrrlq
-[INFO]
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | Hello from get /path-02 | service-b (1.0.0) | service-b-version-1-0-0-deployment-5b44559c86-nrmgw
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | Hello from get /path-02 | service-b (1.0.0) | service-b-version-1-0-0-deployment-5b44559c86-nrmgw
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
 ```
+
+> I cannot know if the `404` is coming from `service-b` or from the sidecar proxies. However it's weird to get response from `service-b` since we don't have any `TrafficTarget` configuration for `service-b`.
 
 </details>
 
@@ -606,10 +616,16 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.02.smi.yaml
 ```
 
+or
+
+```text
+$ kubectl apply -f uc-02.02.smi.yaml
+```
+
 <details><summary>Output of the command</summary>
 
 ```text
-httproutegroup.specs.smi-spec.io/alpha-api-routes created
+httproutegroup.specs.smi-spec.io/alpha-api-routes unchanged
 trafficsplit.split.smi-spec.io/get-path-01-traffic created
 trafficsplit.split.smi-spec.io/get-path-02-traffic created
 ```
@@ -619,7 +635,7 @@ trafficsplit.split.smi-spec.io/get-path-02-traffic created
 Now, you can verify that the demo is working properly using the following command:
 
 ```text
-kubectl logs client-x-deployment-845cdd5657-5x878 -n demo | tail
+$ kubectl logs client-x-version-1-0-1-deployment-7db9cf495b-8t7xs client-x -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
@@ -627,16 +643,16 @@ kubectl logs client-x-deployment-845cdd5657-5x878 -n demo | tail
 > It does NOT always work... yet :-(
 
 ```text
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-b (1.0.0) | service-b-deployment-585dfd5fb6-xrrlq
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-01 | service-a (1.0.0) | service-a-deployment-5cdc9d7f78-vf8sf
-[INFO] Hello from get /path-02 | service-b (1.0.0) | service-b-deployment-585dfd5fb6-xrrlq
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | 503
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | 503
+[INFO] get /path-02 | 503
+[INFO] get /path-01 | 503
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
 ```
 
 </details>
