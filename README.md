@@ -60,6 +60,7 @@ spec:
     matchLabels:
       app: service-a
       version: 1.0.0
+      api: acme-api
   template:
     metadata:
       labels:
@@ -137,6 +138,21 @@ spec:
         env:
         - name: API_HOST
           value: "acme-api.demo"
+---
+# Deploy 'client-x-version-1-0-1' (dummy) Service [Required by OSM]
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-x-version-1-0-1
+  namespace: demo
+spec:
+  selector:
+    app: client-x
+    version: 1.0.1
+  ports:
+  - protocol: TCP
+    port: 9999
+    name: dummy-unused-port
 ```
 
 You can deploy them using the following command:
@@ -145,7 +161,7 @@ You can deploy them using the following command:
 $ kubectl apply -f https://raw.githubusercontent.com/patricekrakow/service-mesh-use-cases/master/uc-02.01.yaml
 ```
 
-or 
+or
 
 ```text
 $ kubectl apply -f uc-02.01.yaml
@@ -161,6 +177,7 @@ service/service-a-version-1-0-0 created
 service/acme-api created
 serviceaccount/client-x created
 deployment.apps/client-x-version-1-0-1-deployment created
+service/client-x-version-1-0-1 created
 ```
 
 </details>
@@ -175,8 +192,8 @@ $ kubectl get pods -n demo
 
 ```text
 NAME                                                  READY   STATUS    RESTARTS   AGE
-client-x-version-1-0-1-deployment-745f54cbf7-xfd5v    1/1     Running   0          36s
-service-a-version-1-0-0-deployment-5d4fbcc598-fj45c   1/1     Running   0          36s
+client-x-version-1-0-1-deployment-7db9cf495b-5cmc6    1/1     Running   0          49s
+service-a-version-1-0-0-deployment-5d4fbcc598-22pj6   1/1     Running   0          49s
 ```
 
 </details>
@@ -184,22 +201,22 @@ service-a-version-1-0-0-deployment-5d4fbcc598-fj45c   1/1     Running   0       
 Finally, you can verify that the demo is working properly using the following command:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-xfd5v -n demo | tail
+$ kubectl logs client-x-version-1-0-1-deployment-7db9cf495b-5cmc6 -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
 
 ```text
-[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
-[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-fj45c
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-22pj6
 ```
 
 </details>
@@ -278,8 +295,8 @@ $ kubectl delete pods --all -n demo
 <details><summary>Output of the command</summary>
 
 ```text
-pod "client-x-version-1-0-1-deployment-745f54cbf7-xfd5v" deleted
-pod "service-a-version-1-0-0-deployment-5d4fbcc598-fj45c" deleted
+pod "client-x-version-1-0-1-deployment-7db9cf495b-5cmc6" deleted
+pod "service-a-version-1-0-0-deployment-5d4fbcc598-22pj6" deleted
 ```
 
 </details>
@@ -294,8 +311,8 @@ $ kubectl get pods -n demo
 
 ```text
 NAME                                                  READY   STATUS    RESTARTS   AGE
-client-x-version-1-0-1-deployment-745f54cbf7-vq5nt    2/2     Running   0          38s
-service-a-version-1-0-0-deployment-5d4fbcc598-kmlnp   2/2     Running   0          37s
+client-x-version-1-0-1-deployment-7db9cf495b-8t7xs    2/2     Running   0          92s
+service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv   2/2     Running   0          92s
 ```
 
 We can now see that there are **two** containers per pod, because of the injection of the sidecar proxies.
@@ -305,22 +322,22 @@ We can now see that there are **two** containers per pod, because of the injecti
 And, the demo, as expected, does not work anymore:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n demo | tail
+$ kubectl logs client-x-version-1-0-1-deployment-7db9cf495b-8t7xs client-x -n demo | tail
 ```
 
 <details><summary>Output of the command</summary>
 
 ```text
-[INFO] get /path-01 | 000
-[INFO] get /path-02 | 000
-[INFO] get /path-01 | 000
-[INFO] get /path-02 | 000
-[INFO] get /path-01 | 000
-[INFO] get /path-02 | 000
-[INFO] get /path-01 | 000
-[INFO] get /path-02 | 000
-[INFO] get /path-01 | 000
-[INFO] get /path-02 | 000
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
 ```
 
 </details>
@@ -381,11 +398,30 @@ httproutegroup.specs.smi-spec.io/alpha-api-routes created
 traffictarget.access.smi-spec.io/allow-client-x-to-service-a-through-alpha-api-routes created
 ```
 
+</details>
+
 Let's have a look back at the log of `client-x`:
 
 ```text
-$ kubectl logs client-x-version-1-0-1-deployment-745f54cbf7-vq5nt client-x -n demo | tail
+$ kubectl logs client-x-version-1-0-1-deployment-7db9cf495b-8t7xs client-x -n demo | tail
 ```
+
+<details><summary>Output of the command</summary>
+
+```text
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-01 | Hello from get /path-01 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+[INFO] get /path-02 | Hello from get /path-02 | service-a (1.0.0) | service-a-version-1-0-0-deployment-5d4fbcc598-j6jzv
+```
+
+We can see that `client-x` can reach back `service-a`.
 
 </details>
 
