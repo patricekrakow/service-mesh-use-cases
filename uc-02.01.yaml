@@ -25,6 +25,7 @@ spec:
     matchLabels:
       app: service-a
       version: 1.0.0
+      api: acme-api
   template:
     metadata:
       labels:
@@ -102,3 +103,18 @@ spec:
         env:
         - name: API_HOST
           value: "acme-api.demo"
+---
+# Deploy 'client-x-version-1-0-1' (dummy) Service [Required by OSM]
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-x-version-1-0-1
+  namespace: demo
+spec:
+  selector:
+    app: client-x
+    version: 1.0.1
+  ports:
+  - protocol: TCP
+    port: 9999
+    name: dummy-unused-port
