@@ -457,6 +457,7 @@ spec:
     matchLabels:
       app: service-b
       version: 1.0.0
+      api: acme-api
   template:
     metadata:
       labels:
