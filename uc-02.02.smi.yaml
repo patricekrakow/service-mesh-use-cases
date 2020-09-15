@@ -16,6 +16,28 @@ spec:
     methods:
     - GET
 ---
+# Deploy the 'allow-client-x-to-service-b-through-alpha-api-routes' TrafficTarget
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha2
+metadata:
+  name: allow-client-x-to-service-b-through-alpha-api-routes
+  namespace: demo
+spec:
+  destination:
+    kind: ServiceAccount
+    name: service-b
+    namespace: demo
+    port: 3000
+  rules:
+  - kind: HTTPRouteGroup
+    name: alpha-api-routes
+    matches:
+    - get-path-02
+  sources:
+  - kind: ServiceAccount
+    name: client-x
+    namespace: demo
+---
 apiVersion: split.smi-spec.io/v1alpha2
 kind: TrafficSplit
 metadata:

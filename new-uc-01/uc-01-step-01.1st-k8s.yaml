@@ -55,35 +55,35 @@ spec:
     port: 3000
     targetPort: 3000
 ---
-# Deploy 'client-x' Service Account
+# Deploy 'client-u' Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: client-x
+  name: client-u
   namespace: demo
 ---
-# Deploy 'client-x-v1-0-1-deployment' Deployment
+# Deploy 'client-u-v1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-x-v1-0-1-deployment
+  name: client-u-v1-0-0-deployment
   namespace: demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client-x
-      version: 1.0.1
+      app: client-u
+      version: 1.0.0
   template:
     metadata:
       labels:
-        app: client-x
-        version: 1.0.1
+        app: client-u
+        version: 1.0.0
     spec:
-      serviceAccountName: client-x
+      serviceAccountName: client-u
       containers:
-      - name: client-x
-        image: patrice1972/client-x:1.0.1
+      - name: client-u
+        image: patrice1972/client-u:1.0.0
         env:
         - name: API_HOST
           value: "acme-api.demo"

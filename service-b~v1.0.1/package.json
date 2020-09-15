@@ -1,0 +1,13 @@
+{
+  "name": "service-b",
+  "version": "1.0.1",
+  "description": "Implementation of get /path-02 from the Alpha API",
+  "author": "Patrice Krakow <patrice.krakow@gmail.com>",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

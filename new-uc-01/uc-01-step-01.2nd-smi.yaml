@@ -31,5 +31,5 @@ spec:
     - get-path-01
   sources:
   - kind: ServiceAccount
-    name: client-x
+    name: client-u
     namespace: demo

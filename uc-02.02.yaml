@@ -18,34 +18,34 @@ spec:
   selector:
     matchLabels:
       app: service-b
-      version: 1.0.0
+      version: 1.0.1
       api: acme-api
   template:
     metadata:
       labels:
         app: service-b
-        version: 1.0.0
+        version: 1.0.1
         api: acme-api
     spec:
       serviceAccountName: service-b
       containers:
       - name: service-b
-        image: patrice1972/service-b:1.0.0
+        image: patrice1972/service-b:1.0.1
         ports:
         - name: service-b-port
           protocol: TCP
           containerPort: 3000
 ---
-# Deploy 'service-b-version-1-0-0' Service
+# Deploy 'service-b-version-1-0-1' Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-b-version-1-0-0
+  name: service-b-version-1-0-1
   namespace: demo
 spec:
   selector:
     app: service-b
-    version: 1.0.0
+    version: 1.0.1
   ports:
   - protocol: TCP
     port: 3000
