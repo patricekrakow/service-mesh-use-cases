@@ -1,0 +1,82 @@
+# uc-01-step-01.k8s-with-consul.yaml
+---
+# Deploy 'consul-demo' Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: consul-demo
+---
+# Deploy 'service-a' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-a
+  namespace: consul-demo
+---
+# Deploy 'service-a-v1-0-0-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a-v1-0-0-deployment
+  namespace: consul-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: service-a
+        version: 1.0.0
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service": "service-a"
+        "consul.hashicorp.com/connect-service-port": "service-a-port"
+    spec:
+      serviceAccountName: service-a
+      containers:
+      - name: service-a
+        image: patrice1972/service-a:1.0.0
+        ports:
+        - name: service-a-port
+          protocol: TCP
+          containerPort: 3000
+---
+# Deploy 'client-u' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-u
+  namespace: consul-demo
+---
+# Deploy 'client-u-v1-0-0-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-u-v1-0-0-deployment
+  namespace: consul-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-u
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: client-u
+        version: 1.0.0
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service": "client-u"
+        "consul.hashicorp.com/connect-service-upstreams": "service-a:3000"
+    spec:
+      serviceAccountName: client-u
+      containers:
+      - name: client-u
+        image: patrice1972/client-u:1.0.0
+        env:
+        - name: API_HOST
+          value: "localhost"
