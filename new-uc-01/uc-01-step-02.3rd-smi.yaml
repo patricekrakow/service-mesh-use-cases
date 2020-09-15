@@ -1,10 +1,10 @@
-# uc-01-step-02.smi.yaml
+# uc-01-step-02.2nd-smi.yaml
 ---
-# Deploy 'service-a-v1.0.0' Service
+# Deploy 'service-a-v1-0-0' Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-a-v1.0.0
+  name: service-a-v1-0-0
   namespace: demo
 spec:
   selector:
@@ -15,11 +15,11 @@ spec:
     port: 3000
     targetPort: 3000
 ---
-# Deploy 'service-a-v1.1.0' Service
+# Deploy 'service-a-v1-1-0' Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-a-v1.1.0
+  name: service-a-v1-1-0
   namespace: demo
 spec:
   selector:

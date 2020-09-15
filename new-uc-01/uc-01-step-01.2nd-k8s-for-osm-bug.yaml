@@ -1,0 +1,16 @@
+# uc-01-step-01.2nd-k8s-for-osm-bug.yaml
+---
+# Deploy 'client-u-v1-0-0' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-u-v1-0-0
+  namespace: demo
+spec:
+  selector:
+    app: client-u
+    version: 1.0.0
+  ports:
+  - protocol: TCP
+    port: 9999
+    name: dummy-unused-port

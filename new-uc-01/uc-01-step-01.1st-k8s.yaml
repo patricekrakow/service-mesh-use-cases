@@ -25,6 +25,7 @@ spec:
     matchLabels:
       app: service-a
       version: 1.0.0
+      api: acme-api
   template:
     metadata:
       labels:

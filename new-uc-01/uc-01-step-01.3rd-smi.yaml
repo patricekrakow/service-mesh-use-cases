@@ -1,4 +1,4 @@
-# uc-01-step-01.2nd-smi.yaml
+# uc-01-step-01.3rd-smi.yaml
 ---
 apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
