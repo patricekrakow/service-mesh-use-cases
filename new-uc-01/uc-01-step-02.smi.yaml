@@ -1,0 +1,47 @@
+# uc-01-step-02.smi.yaml
+---
+# Deploy 'service-a-v1.0.0' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-a-v1.0.0
+  namespace: demo
+spec:
+  selector:
+    app: service-a
+    version: 1.0.0
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+# Deploy 'service-a-v1.1.0' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-a-v1.1.0
+  namespace: demo
+spec:
+  selector:
+    app: service-a
+    version: 1.1.0
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: split.smi-spec.io/v1alpha2
+kind: TrafficSplit
+metadata:
+  name: get-path-01-traffic
+  namespace: demo
+spec:
+  service: acme-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-01
+  backends:
+  - service: service-a-v1-0-0
+    weight: 90
+  - service: service-a-v1-1-0
+    weight: 10
