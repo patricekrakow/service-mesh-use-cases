@@ -1,4 +1,4 @@
-# uc-01-step-02.k8s-with-consul.yaml
+# uc-01-step-02.1st-k8s-with-consul.yaml
 ---
 # Deploy 'service-a-v1-1-0-deployment' Deployment
 apiVersion: apps/v1
@@ -21,6 +21,8 @@ spec:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service": "service-a"
         "consul.hashicorp.com/connect-service-port": "service-a-port"
+        "consul.hashicorp.com/service-meta-app": "service-a"
+        "consul.hashicorp.com/service-meta-version": "1.1.0"
     spec:
       serviceAccountName: service-a
       containers:
