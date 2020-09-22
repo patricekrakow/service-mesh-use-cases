@@ -39,7 +39,6 @@
 5. Authorize `client-x` to consume `{get,acme-api,/path-01}` as defined in `Alpha API (1.0.0)`.
 6. Develop `client-x (1.0.0)`, without ANY references to `service-a`, calling `{get,acme-api,/path-01}` as defined in `Alpha API (1.0.0)`.
 7. Deploy `client-x (1.0.0)`.
-
 8. Update `service-a (1.0.1)` still implementing `{get,acme-api,/path-01}` as defined in `Alpha API (1.0.0)`.
 9. Canary Deploy `service-a (1.0.1)`.
 10. Remove `service-a (1.0.0)`.
