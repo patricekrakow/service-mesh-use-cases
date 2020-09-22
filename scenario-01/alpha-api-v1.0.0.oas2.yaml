@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  title: Alpha API
+  version: 1.0.0
+host: acme-api
+basePath: /
+paths:
+  '/path-01':
+    get:
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Message'
+          examples:
+            application/json:
+              message: 'Hello from get /path-01!'
+definitions:
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
