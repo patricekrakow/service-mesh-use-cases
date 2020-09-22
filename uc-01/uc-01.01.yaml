@@ -1,0 +1,104 @@
+# uc-01.01.yaml
+---
+# Deploy 'demo' Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+---
+# Deploy 'service-a' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-a
+  namespace: demo
+---
+# Deploy 'service-a-version-1-0-0-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a-version-1-0-0-deployment
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: service-a
+        version: 1.0.0
+        api: acme-api
+    spec:
+      serviceAccountName: service-a
+      containers:
+      - name: service-a
+        image: patrice1972/service-a:1.0.0
+        ports:
+        - name: service-a-port
+          protocol: TCP
+          containerPort: 3000
+---
+# Deploy 'acme-api' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: acme-api
+  namespace: demo
+spec:
+  selector:
+    api: acme-api
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+# Deploy 'client-x' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-x
+  namespace: demo
+---
+# Deploy 'client-x-version-1-0-1-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-x-version-1-0-1-deployment
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-x
+      version: 1.0.1
+  template:
+    metadata:
+      labels:
+        app: client-x
+        version: 1.0.1
+    spec:
+      serviceAccountName: client-x
+      containers:
+      - name: client-x
+        image: patrice1972/client-x:1.0.1
+        env:
+        - name: API_HOST
+          value: "acme-api.demo"
+---
+# Deploy 'client-x-version-1-0-1' (dummy) Service [Required by OSM]
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-x-version-1-0-1
+  namespace: demo
+spec:
+  selector:
+    app: client-x
+    version: 1.0.1
+  ports:
+  - protocol: TCP
+    port: 9999
+    name: dummy-unused-port
