@@ -1,0 +1,14 @@
+{
+  "Kind": "service-splitter",
+  "Name": "service-a",
+  "Splits": [
+    {
+      "Weight": 90,
+      "ServiceSubset": "service-a-v1-0-0"
+    },
+    {
+      "Weight": 10,
+      "ServiceSubset": "service-a-v1-1-0"
+    }
+  ]
+}
