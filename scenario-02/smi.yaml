@@ -1,0 +1,16 @@
+---
+apiVersion: split.smi-spec.io/v1alpha2
+kind: TrafficSplit
+metadata:
+  name: get-path-01-traffic
+  namespace: demo
+spec:
+  service: acme-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-01
+  backends:
+  - service: service-a-v1-0-0
+    weight: 90
+  - service: service-a-v1-0-1
+    weight: 10
