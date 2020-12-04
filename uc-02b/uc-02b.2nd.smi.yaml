@@ -1,0 +1,86 @@
+---
+apiVersion: specs.smi-spec.io/v1alpha3
+kind: HTTPRouteGroup
+metadata:
+  name: alpha-api-routes
+  namespace: demo-uc-02b
+spec:
+  matches:
+  - name: get-path-01
+    pathRegex: /path-01
+    methods:
+    - GET
+  - name: get-path-02
+    pathRegex: /path-02
+    methods:
+    - GET
+---
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha2
+metadata:
+  name: allow-client-x-to-service-a-through-alpha-api-routes
+  namespace: demo-uc-02b
+spec:
+  destination:
+    kind: ServiceAccount
+    name: service-a
+    namespace: demo-uc-02b
+    port: 3000
+  rules:
+  - kind: HTTPRouteGroup
+    name: alpha-api-routes
+    matches:
+    - get-path-01
+  sources:
+  - kind: ServiceAccount
+    name: client-x
+    namespace: demo-uc-02b
+---
+kind: TrafficTarget
+apiVersion: access.smi-spec.io/v1alpha2
+metadata:
+  name: allow-client-x-to-service-b-through-alpha-api-routes
+  namespace: demo-uc-02b
+spec:
+  destination:
+    kind: ServiceAccount
+    name: service-b
+    namespace: demo-uc-02b
+    port: 3000
+  rules:
+  - kind: HTTPRouteGroup
+    name: alpha-api-routes
+    matches:
+    - get-path-02
+  sources:
+  - kind: ServiceAccount
+    name: client-x
+    namespace: demo-uc-02b
+---
+apiVersion: split.smi-spec.io/v1alpha2
+kind: TrafficSplit
+metadata:
+  name: get-path-01-traffic
+  namespace: demo-uc-02b
+spec:
+  service: acme-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-01
+  backends:
+  - service: service-a-v1-0-0
+    weight: 100
+---
+apiVersion: split.smi-spec.io/v1alpha2
+kind: TrafficSplit
+metadata:
+  name: get-path-02-traffic
+  namespace: demo-uc-02b
+spec:
+  service: acme-api
+  matches:
+  - kind: HTTPRouteGroup
+    name: get-path-02
+  backends:
+  - service: service-b-v1-0-0
+    weight: 100
