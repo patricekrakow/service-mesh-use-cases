@@ -20,3 +20,71 @@ Let's have `service-b` a _service_ implementing the *one* _API endpoints_ - `get
 ### Demo Configuration
 
 The Kubernetes manifests of the above situation can be written as follow:
+
+```text
+$ kubectl get pods -n demo-uc-02b
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-0-deployment-59db69bf76-w4ktv    1/1     Running   0          3m37s
+service-a-version-1-0-0-deployment-64f79cf6db-xjwgz   1/1     Running   0          11m
+service-b-version-1-0-0-deployment-bd96bb759-xpdm2    1/1     Running   0          11m
+```
+
+```text
+kubectl logs client-x-version-1-0-0-deployment-59db69bf76-w4ktv -n demo-uc-02b | tail
+[INFO] get /path-01 | Hello from get /path-01! | service-a (1.0.0) | service-a-version-1-0-0-deployment-64f79cf6db-xjwgz
+[INFO] get /path-02 | Hello from get /path-02! | service-b (1.0.0) | service-b-version-1-0-0-deployment-bd96bb759-xpdm2
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | Hello from get /path-02! | service-b (1.0.0) | service-b-version-1-0-0-deployment-bd96bb759-xpdm2
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | 404
+[INFO] get /path-01 | 404
+[INFO] get /path-02 | Hello from get /path-02! | service-b (1.0.0) | service-b-version-1-0-0-deployment-bd96bb759-xpdm2
+[INFO] get /path-01 | Hello from get /path-01! | service-a (1.0.0) | service-a-version-1-0-0-deployment-64f79cf6db-xjwgz
+[INFO] get /path-02 | 404
+```
+
+### OSM
+
+```text
+$ osm namespace add demo-uc-02b
+Namespace [demo-uc-02b] successfully added to mesh [osm]
+```
+
+```text
+kubectl get pods -n demo-uc-02b
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-0-deployment-59db69bf76-w4ktv    1/1     Running   0          12m
+service-a-version-1-0-0-deployment-64f79cf6db-xjwgz   1/1     Running   0          20m
+service-b-version-1-0-0-deployment-bd96bb759-xpdm2    1/1     Running   0          20m
+```
+
+```text
+kubectl delete pods --all -n demo-uc-02b                                        
+pod "client-x-version-1-0-0-deployment-59db69bf76-w4ktv" deleted
+pod "service-a-version-1-0-0-deployment-64f79cf6db-xjwgz" deleted
+pod "service-b-version-1-0-0-deployment-bd96bb759-xpdm2" deleted
+```
+
+```text
+kubectl get pods -n demo-uc-02b                                           
+NAME                                                  READY   STATUS    RESTARTS   AGE
+client-x-version-1-0-0-deployment-59db69bf76-2fkbl    2/2     Running   0          71s
+service-a-version-1-0-0-deployment-64f79cf6db-v2q7r   2/2     Running   0          71s
+service-b-version-1-0-0-deployment-bd96bb759-5kj8w    2/2     Running   0          71s
+```
+
+```text
+kubectl logs client-x-version-1-0-0-deployment-59db69bf76-2fkbl client-x -n demo-uc-02b | tail
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+[INFO] get /path-01 | 000
+[INFO] get /path-02 | 000
+```
+
+### Istio

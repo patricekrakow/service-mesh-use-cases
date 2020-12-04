@@ -149,12 +149,10 @@ spec:
       serviceAccountName: client-x
       containers:
       - name: client-x
-        image: patrice1972/demo-uc-02b-client-x:1.0.1
+        image: patrice1972/demo-uc-02b-client-x:1.0.0
         env:
         - name: API_HOST
           value: "acme-api.demo-uc-02b"
-        - name: API_PORT
-          value: 3000
 ---
 # Deploy 'client-x-version-1-0-0' (dummy) Service [Required by OSM]
 apiVersion: v1
