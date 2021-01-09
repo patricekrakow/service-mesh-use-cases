@@ -1,0 +1,88 @@
+# File: routing.step-01.k8s.yaml
+---
+# Deploy 'routing-demo' Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: routing-demo
+---
+# Deploy 'service-a' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-a
+  namespace: routing-demo
+---
+# Deploy 'service-a-version-1-0-0-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a-version-1-0-0-deployment
+  namespace: routing-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: service-a
+        version: 1.0.0
+        api: alpha-api
+    spec:
+      serviceAccountName: service-a
+      containers:
+      - name: service-a
+        image: patrice1972/routing-demo-service-a:1.0.0
+        ports:
+        - protocol: TCP
+          containerPort: 3000
+---
+# Deploy 'alpha-api' Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpha-api
+  namespace: routing-demo
+spec:
+  selector:
+    api: alpha-api
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+# Deploy 'client-x' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-x
+  namespace: routing-demo
+---
+# Deploy 'client-x-version-1-0-1-deployment' Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-x-version-1-0-1-deployment
+  namespace: routing-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-x
+      version: 1.0.1
+  template:
+    metadata:
+      labels:
+        app: client-x
+        version: 1.0.1
+    spec:
+      serviceAccountName: client-x
+      containers:
+      - name: client-x
+        image: patrice1972/routing-demo-client-x:1.0.1
+        env:
+        - name: API_HOST
+          value: "alpha-api.demo-routing"
