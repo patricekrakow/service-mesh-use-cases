@@ -32,9 +32,23 @@ We start with the following Kubernetes configuration:
 # File: routing.step-01.k8s.yaml
 ```
 
+Let's not forget to label the `routing-demo` namespace so the pods automatically an Istio (Envoy) proxy injected as a sidecar:
+
+```text
+$ kubectl label namespace routing-demo istio-injection=enabled
+namespace/routing-demo labeled
+```
+
 Let's apply it:
 
 ```text
-$ kubectl apply -f uc-01.01.yaml
+$ kubectl apply -f routing.step-01.k8s.yaml
+...
+```
+
+Let's just add the version `1.0.0` of `service-b`:
+
+```text
+$ kubectl apply -f routing.step-02.k8s.yaml
 ...
 ```
