@@ -1,27 +1,27 @@
 ---
-# Deploy 'service-a-v2-0-0-deployment' Deployment
+# Deploy 'service-b-v1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-a-v2-0-0-deployment
+  name: service-b-v1-0-0-deployment
   namespace: routing-demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: service-a
-      version: 2.0.0
+      app: service-b
+      version: 1.0.0
   template:
     metadata:
       labels:
-        app: service-a
-        version: 2.0.0
+        app: service-b
+        version: 1.0.0
         api: alpha-api
     spec:
-      serviceAccountName: service-a
+      serviceAccountName: service-b
       containers:
-      - name: service-a
-        image: patrice1972/routing-demo-service-a:2.0.0
+      - name: service-b
+        image: patrice1972/routing-demo-service-b:1.0.0
         ports:
         - protocol: TCP
           containerPort: 3000

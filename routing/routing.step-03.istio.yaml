@@ -1,0 +1,52 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: alpha-api-implementations
+  namespace: routing-demo
+spec:
+  host: alpha-api.routing-demo
+  subsets:
+  - name: service-a-v1-0-0
+    labels:
+      app: service-a
+      version: 1.0.0
+  - name: service-b-v1-0-0
+    labels:
+      app: service-b
+      version: 1.0.0
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: alpha-api-routes
+  namespace: routing-demo
+spec:
+  hosts:
+  - alpha-api.routing-demo
+  http:
+  - name: "get-path-01"
+    match:
+    - method:
+       exact: GET
+      uri:
+        prefix: "/path-01"
+    route:
+    - destination:
+        host: alpha-api.routing-demo
+        subset: service-a-v1-0-0
+  - name: "get-path-02"
+    match:
+    - method:
+        exact: GET
+      uri:
+        prefix: "/path-02"
+    route:
+    - destination:
+        host: alpha-api.routing-demo
+        subset: service-a-v1-0-0
+      weight: 75
+    - destination:
+        host: alpha-api.routing-demo
+        subset: service-b-v1-0-0
+      weight: 25
