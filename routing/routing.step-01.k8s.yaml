@@ -61,28 +61,28 @@ metadata:
   name: client-x
   namespace: routing-demo
 ---
-# Deploy 'client-x-version-1-0-1-deployment' Deployment
+# Deploy 'client-x-version-1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-x-version-1-0-1-deployment
+  name: client-x-version-1-0-0-deployment
   namespace: routing-demo
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: client-x
-      version: 1.0.1
+      version: 1.0.0
   template:
     metadata:
       labels:
         app: client-x
-        version: 1.0.1
+        version: 1.0.0
     spec:
       serviceAccountName: client-x
       containers:
       - name: client-x
-        image: patrice1972/routing-demo-client-x:1.0.1
+        image: patrice1972/routing-demo-client-x:1.0.0
         env:
         - name: API_HOST
           value: "alpha-api.demo-routing"
