@@ -1,4 +1,11 @@
 ---
+# Deploy 'service-b' Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-b
+  namespace: routing-demo
+---
 # Deploy 'service-b-v1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
