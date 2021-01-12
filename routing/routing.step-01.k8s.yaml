@@ -85,4 +85,4 @@ spec:
         image: patrice1972/routing-demo-client-x:1.0.0
         env:
         - name: API_HOST
-          value: "alpha-api.demo-routing"
+          value: "alpha-api.routing-demo"
