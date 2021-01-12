@@ -13,11 +13,11 @@ metadata:
   name: service-a
   namespace: routing-demo
 ---
-# Deploy 'service-a-version-1-0-0-deployment' Deployment
+# Deploy 'service-a-v1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-a-version-1-0-0-deployment
+  name: service-a-v1-0-0-deployment
   namespace: routing-demo
 spec:
   replicas: 1
@@ -61,11 +61,11 @@ metadata:
   name: client-x
   namespace: routing-demo
 ---
-# Deploy 'client-x-version-1-0-0-deployment' Deployment
+# Deploy 'client-x-v1-0-0-deployment' Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-x-version-1-0-0-deployment
+  name: client-x-v1-0-0-deployment
   namespace: routing-demo
 spec:
   replicas: 1
